@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ngos-kosan Estates & Kost Living</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- NAVBAR UTAMA -->
+    <header class="navbar">
+        <div class="nav-container">
+            <a href="javascript:void(0)" onclick="app.showHomeView()" class="brand-logo">
+                <i class="fa-solid fa-leaf"></i>
+                <span>Ngos-kosan</span>
+            </a>
+
+            <div class="nav-center" id="navCenterLinks">
+                <a href="javascript:void(0)" onclick="app.showHomeView()" class="active">Eksplorasi Kost</a>
+                <a href="#about">Tentang Kami</a>
+                <a href="#features">Keunggulan</a>
+                <a href="javascript:void(0)" onclick="app.showBookingsHistory()" id="linkRiwayat" style="display:none;">Riwayat Sewa</a>
+                <a href="javascript:void(0)" onclick="app.showLandlordDashboard()" id="linkLandlord" style="display:none;">Dashboard Pemilik</a>
+            </div>
+
+            <div class="nav-auth" id="navAuthArea">
+                <!-- Diisi Dinamis oleh app.js via session -->
+                <button class="btn btn-outline" onclick="app.openModal('modalAuth')">Masuk / Daftar</button>
+            </div>
+
+            <div class="mobile-menu-btn" onclick="app.toggleMobileMenu()">
+                <i class="fa-solid fa-bars"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- MOBILE SIDEBAR / MENU -->
+    <div class="mobile-drawer" id="mobileDrawer">
+        <div class="mobile-drawer-header">
+            <h3>Menu</h3>
+            <i class="fa-solid fa-xmark close-drawer" onclick="app.toggleMobileMenu()"></i>
+        </div>
+        <div class="mobile-drawer-links" id="mobileDrawerLinks">
+            <!-- Konten Sinkron Dinamis -->
+        </div>
+    </div>
+
+    <!-- MAIN APP CONTAINER -->
+    <main id="appContainer">
+
+        <!-- ======================= HOME / TENANT VIEW ======================= -->
+        <section id="homeView">
+            <!-- HERO SECTION (Sesuai Konsep Gambar: Verdant Hills Estates) -->
+            <div class="hero-section">
+                <div class="hero-overlay"></div>
+                <div class="hero-content">
+                    <span class="hero-tagline"><i class="fa-solid fa-location-dot"></i> Bandung - Jakarta - Jogja Premium Living</span>
+                    <h1 class="hero-title">Ngos-kosan Estates & Living</h1>
+                    <p class="hero-subtitle">Experience nature's luxury. Temukan kost eksklusif bernuansa asri dan modern dengan fasilitas lengkap.</p>
+
+                    <!-- QUICK STATS CARDS DI HERO BANNER -->
+                    <div class="hero-metric-grid">
+                        <div class="hero-metric-card">
+                            <h3>3665 sft</h3>
+                            <p><i class="fa-solid fa-expand"></i> Luas Area Hijau</p>
+                        </div>
+                        <div class="hero-metric-card">
+                            <h3>8+</h3>
+                            <p><i class="fa-solid fa-shield-halved"></i> Fitur Keamanan</p>
+                        </div>
+                        <div class="hero-metric-card">
+                            <h3>4+</h3>
+                            <p><i class="fa-solid fa-bed"></i> Pilihan Tipe Kamar</p>
+                        </div>
+                        <div class="hero-metric-card">
+                            <h3>2+</h3>
+                            <p><i class="fa-solid fa-car"></i> Area Parkir Luas</p>
+                        </div>
+                    </div>
+
+                    <!-- SEARCH BAR FLOATING -->
+                    <div class="search-bar-floating">
+                        <div class="search-input-group">
+                            <label><i class="fa-solid fa-magnifying-glass"></i> Lokasi / Nama Kost</label>
+                            <input type="text" id="filterSearch" placeholder="Contoh: Bandung, Tebet, Ciburial...">
+                        </div>
+                        <div class="search-input-group">
+                            <label><i class="fa-solid fa-users"></i> Tipe Penghuni</label>
+                            <select id="filterType">
+                                <option value="All">Semua Tipe</option>
+                                <option value="Putra">Kost Putra</option>
+                                <option value="Putri">Kost Putri</option>
+                                <option value="Campur">Campur</option>
+                            </select>
+                        </div>
+                        <div class="search-input-group">
+                            <label><i class="fa-solid fa-tags"></i> Rentang Harga Maksimal</label>
+                            <div class="price-slider-box">
+                                <span id="priceLabel">Rp 5.000.000 / bln</span>
+                                <input type="range" id="filterPrice" min="500000" max="6000000" step="250000" value="5000000">
+                            </div>
+                        </div>
+                        <button class="btn btn-primary btn-search" onclick="app.fetchKosts()">
+                            <i class="fa-solid fa-filter"></i> Terapkan Filter
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- KATALOG KOST SECTION -->
+            <section class="catalog-section" id="catalogSection">
+                <div class="section-header">
+                    <div>
+                        <h2>Rekomendasi Kost Pilihan</h2>
+                        <p>Pilihan kamar kost terbaik dengan kenyamanan tingkat tinggi</p>
+                    </div>
+                    <div class="filter-quick-chips">
+                        <button class="chip active" onclick="app.setQuickFilter('All', this)">Semua</button>
+                        <button class="chip" onclick="app.setQuickFilter('Putri', this)">Khusus Putri</button>
+                        <button class="chip" onclick="app.setQuickFilter('Putra', this)">Khusus Putra</button>
+                        <button class="chip" onclick="app.setQuickFilter('Campur', this)">Campur</button>
+                    </div>
+                </div>
+
+                <div class="property-grid" id="kostListContainer">
+                    <!-- Kartu-kartu kost akan di-render di sini via JavaScript -->
+                </div>
+            </section>
+        </section>
+
+        <!-- ======================= LANDLORD VIEW (DASHBOARD) ======================= -->
+        <section id="landlordView" class="landlord-section" style="display: none;">
+            <div class="dashboard-header">
+                <div>
+                    <h2>Dashboard Pemilik Kost</h2>
+                    <p>Kelola properti, pantau okupansi, dan konfirmasi pengajuan sewa.</p>
+                </div>
+                <button class="btn btn-primary" onclick="app.openModal('modalAddKost')">
+                    <i class="fa-solid fa-plus"></i> Tambah Properti Baru
+                </button>
+            </div>
+
+            <!-- METRIC STATS CARDS -->
+            <div class="stats-overview-grid">
+                <div class="stat-box">
+                    <div class="stat-icon bg-blue"><i class="fa-solid fa-building"></i></div>
+                    <div>
+                        <span class="stat-label">Total Properti</span>
+                        <h3 id="statTotalProps">0</h3>
+                    </div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-icon bg-green"><i class="fa-solid fa-door-open"></i></div>
+                    <div>
+                        <span class="stat-label">Kamar Terisi / Okupansi</span>
+                        <h3 id="statOccupancy">0%</h3>
+                    </div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-icon bg-yellow"><i class="fa-solid fa-wallet"></i></div>
+                    <div>
+                        <span class="stat-label">Total Pendapatan Terverifikasi</span>
+                        <h3 id="statRevenue">Rp 0</h3>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TABEL BOOKING MASUK -->
+            <div class="dashboard-card">
+                <h3><i class="fa-solid fa-list-check"></i> Pengajuan Booking Calon Penyewa</h3>
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Properti</th>
+                                <th>Calon Penyewa</th>
+                                <th>Kontak</th>
+                                <th>Mulai Sewa</th>
+                                <th>Durasi</th>
+                                <th>Total Bayar</th>
+                                <th>Metode</th>
+                                <th>Status</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="landlordBookingTableings">
+                            <!-- Diisi via app.js -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ======================= RIWAYAT BOOKING VIEW (TENANT) ======================= -->
+        <section id="bookingsHistoryView" class="container history-section" style="display: none;">
+            <div class="section-header">
+                <div>
+                    <h2>Riwayat Pengajuan Sewa Anda</h2>
+                    <p>Pantau status verifikasi dan pembayaran kost yang Anda pesan.</p>
+                </div>
+            </div>
+            <div class="property-grid" id="tenantBookingsContainer">
+                <!-- Diisi via app.js -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ======================= MODAL AUTH (LOGIN & REGISTER) ======================= -->
+    <div class="modal-overlay" id="modalAuth">
+        <div class="modal-card">
+            <button class="modal-close" onclick="app.closeModal('modalAuth')">&times;</button>
+            <div class="auth-tabs">
+                <button class="auth-tab-btn active" id="tabBtnLogin" onclick="app.switchAuthTab('login')">Masuk</button>
+                <button class="auth-tab-btn" id="tabBtnRegister" onclick="app.switchAuthTab('register')">Daftar Akun</button>
+            </div>
+
+            <!-- LOGIN FORM -->
+            <form id="formLogin" onsubmit="app.handleLogin(event)">
+                <div class="form-group">
+                    <label>Alamat Email</label>
+                    <input type="email" id="loginEmail" required placeholder="nama@email.com">
+                </div>
+                <div class="form-group">
+                    <label>Kata Sandi</label>
+                    <input type="password" id="loginPassword" required placeholder="Minimal 6 karakter">
+                </div>
+                <p class="form-helper-text">Akun Demo: <b>owner@example.com</b> (Pemilik) atau <b>tenant@example.com</b> (Penyewa) | Pass: <b>password123</b></p>
+                <button type="submit" class="btn btn-primary btn-block">Masuk Sekarang</button>
+            </form>
+
+            <!-- REGISTER FORM -->
+            <form id="formRegister" onsubmit="app.handleRegister(event)" style="display: none;">
+                <div class="form-group">
+                    <label>Nama Lengkap</label>
+                    <input type="text" id="regName" required placeholder="John Doe">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="regEmail" required placeholder="nama@email.com">
+                </div>
+                <div class="form-group">
+                    <label>Nomor WhatsApp/HP</label>
+                    <input type="text" id="regPhone" required placeholder="08123456789">
+                </div>
+                <div class="form-group">
+                    <label>Kata Sandi</label>
+                    <input type="password" id="regPassword" required placeholder="Minimal 6 karakter">
+                </div>
+                <div class="form-group">
+                    <label>Mendaftar Sebagai:</label>
+                    <select id="regRole">
+                        <option value="tenant">Pencari Kost (Tenant)</option>
+                        <option value="landlord">Pemilik Kost (Landlord)</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Buat Akun</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ======================= MODAL DETAIL KOST ======================= -->
+    <div class="modal-overlay" id="modalDetail">
+        <div class="modal-card modal-lg">
+            <button class="modal-close" onclick="app.closeModal('modalDetail')">&times;</button>
+            <div id="modalDetailBody">
+                <!-- Konten dinamis kost detail diisi via app.js -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================= MODAL BOOKING FORM ======================= -->
+    <div class="modal-overlay" id="modalBooking">
+        <div class="modal-card">
+            <button class="modal-close" onclick="app.closeModal('modalBooking')">&times;</button>
+            <h3>Ajukan Sewa Properti</h3>
+            <p id="bookingKostTitle" class="text-muted"></p>
+
+            <form id="formBooking" onsubmit="app.submitBooking(event)">
+                <input type="hidden" id="bookingKostId">
+                <input type="hidden" id="bookingMonthlyRate">
+
+                <div class="form-group">
+                    <label>Mulai Tanggal Sewa</label>
+                    <input type="date" id="bookingStartDate" required>
+                </div>
+                <div class="form-group">
+                    <label>Durasi Sewa</label>
+                    <select id="bookingDuration" onchange="app.calculateBookingPrice()">
+                        <option value="1">1 Bulan</option>
+                        <option value="3">3 Bulan</option>
+                        <option value="6">6 Bulan</option>
+                        <option value="12">12 Bulan (1 Tahun)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Metode Pembayaran (Simulasi)</label>
+                    <select id="bookingPaymentMethod">
+                        <option value="Transfer Bank BCA">Transfer Bank BCA Virtual Account</option>
+                        <option value="Mandiri Bill">Mandiri Bill Payment</option>
+                        <option value="GoPay / QRIS">QRIS / E-Wallet</option>
+                    </select>
+                </div>
+
+                <div class="price-breakdown">
+                    <div class="price-row">
+                        <span>Harga Sewa Per Bulan</span>
+                        <span id="bookingRateText">Rp 0</span>
+                    </div>
+                    <div class="price-row total-row">
+                        <span>Total Tagihan</span>
+                        <strong id="bookingTotalPriceText">Rp 0</strong>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block">Konfirmasi & Ajukan Booking</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ======================= MODAL TAMBAH KOST (PEMILIK) ======================= -->
+    <div class="modal-overlay" id="modalAddKost">
+        <div class="modal-card modal-lg">
+            <button class="modal-close" onclick="app.closeModal('modalAddKost')">&times;</button>
+            <h3>Tambah Properti Kost Baru</h3>
+            <p class="text-muted">Lengkapi data properti Anda untuk mulai menerima calon penyewa.</p>
+
+            <form id="formAddKost" onsubmit="app.handleAddKost(event)">
+                <div class="form-row">
+                    <div class="form-group col-6">
+                        <label>Nama Kost</label>
+                        <input type="text" id="kostName" placeholder="Contoh: Kost Ngos-kosan Premium" required>
+                    </div>
+                    <div class="form-group col-6">
+                        <label>Tipe Kost</label>
+                        <select id="kostType">
+                            <option value="Campur">Campur</option>
+                            <option value="Putri">Khusus Putri</option>
+                            <option value="Putra">Khusus Putra</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-6">
+                        <label>Kota</label>
+                        <input type="text" id="kostCity" placeholder="Contoh: Bandung" required>
+                    </div>
+                    <div class="form-group col-6">
+                        <label>Harga Sewa Bulanan (Rp)</label>
+                        <input type="number" id="kostPrice" placeholder="1500000" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Alamat Lengkap</label>
+                    <input type="text" id="kostAddress" placeholder="Jl. Raya Hijau No. 10..." required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-6">
+                        <label>Kamar Mandi</label>
+                        <select id="kostBathroom">
+                            <option value="Dalam">Kamar Mandi Dalam</option>
+                            <option value="Luar">Kamar Mandi Luar</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-6">
+                        <label>Total Jumlah Kamar</label>
+                        <input type="number" id="kostRooms" value="5" min="1" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>URL Gambar Banner</label>
+                    <input type="url" id="kostImage" value="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Fasilitas Tersedia</label>
+                    <div class="facilities-checkbox-grid">
+                        <label><input type="checkbox" name="facilities" value="AC" checked> AC</label>
+                        <label><input type="checkbox" name="facilities" value="Wi-Fi" checked> Wi-Fi Super Cepat</label>
+                        <label><input type="checkbox" name="facilities" value="Kasur" checked> Kasur & Bantal</label>
+                        <label><input type="checkbox" name="facilities" value="Lemari" checked> Lemari Pakaian</label>
+                        <label><input type="checkbox" name="facilities" value="Bebas 24 Jam"> Bebas Akses 24 Jam</label>
+                        <label><input type="checkbox" name="facilities" value="Parkir" checked> Parkir Mobil / Motor</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Aturan Khusus Kost</label>
+                    <textarea id="kostRules" rows="2" placeholder="Contoh: Dilarang merokok, jam malam pukul 23:00"></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block">Simpan & Publikasikan Properti</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="footer" id="about">
+        <div class="footer-container">
+            <div>
+                <a href="#" class="brand-logo footer-logo">
+                    <i class="fa-solid fa-leaf"></i>
+                    <span>Ngos-kosan Estates</span>
+                </a>
+                <p>Platform terintegrasi pencarian dan pengelolaan hunian eksklusif dengan kenyamanan maksimal dan proses sewa digital terpercaya.</p>
+            </div>
+            <div>
+                <h4>Navigasi Cepat</h4>
+                <ul>
+                    <li><a href="javascript:void(0)" onclick="app.showHomeView()">Cari Kost</a></li>
+                    <li><a href="javascript:void(0)" onclick="app.openModal('modalAuth')">Masuk / Daftar</a></li>
+                    <li><a href="#">Syarat & Ketentuan</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>Layanan Bantuan</h4>
+                <p><i class="fa-solid fa-phone"></i> (022) 877-0091</p>
+                <p><i class="fa-solid fa-envelope"></i> help@Ngos-kosan.local</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Ngos-kosan Living. Hak Cipta Dilindungi.</p>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
